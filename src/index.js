@@ -1,28 +1,14 @@
 import React from "react";
+import { autorun, set } from "mobx";
 import { render } from "react-dom";
-import DevTools from "mobx-react-devtools";
+import WorkDocument from "./store";
+import View from "./view";
 
-import TodoList from "./components/TodoList";
-import TodoListModel from "./models/TodoListModel";
-import TodoModel from "./models/TodoModel";
+var firstRun = true;
 
-const store = new TodoListModel();
+var store = new WorkDocument();
+store.addItem("This is first item.");
 
-render(
-  <div>
-    <DevTools />
-    <TodoList store={store} />
-  </div>,
-  document.getElementById("root")
-);
+render(<View store={store} />, document.getElementById("root"));
 
-store.addTodo("Get Coffee");
-store.addTodo("Write simpler code");
-store.todos[0].finished = true;
-
-setTimeout(() => {
-  store.addTodo("Get a cookie as well");
-}, 2000);
-
-// playing around in the console
 window.store = store;
