@@ -23,6 +23,17 @@ class ItemNode {
   }
 
   @action.bound
+  focusNode() {
+    // In case we can find this node we should directly focus it instead of 2 renders.
+    var node = document.getElementById("id_" + this.id);
+    if (node) {
+      node.focus();
+    } else {
+      this.focused = true;
+    }
+  }
+
+  @action.bound
   addChild(title) {
     var newNode = new ItemNode(title);
     this.addChildNode(newNode);
@@ -32,6 +43,7 @@ class ItemNode {
   addChildNode(newNode) {
     newNode.parent = this;
     newNode.focused = true;
+    newNode.next = null;
     if (this.childrenRoot == null) {
       this.childrenRoot = newNode;
     } else {
@@ -52,7 +64,7 @@ class ItemNode {
   @action.bound
   setNextNode(nextNode) {
     this.next = nextNode;
-    this.focused = true;
+    this.focusNode();
   }
 
   @action.bound
@@ -88,6 +100,35 @@ class ItemNode {
     if (previousNode != null) {
       previousNode.next = this.next;
       previousNode.addChildNode(this);
+    }
+  }
+
+  @action.bound
+  focusPreviousNode() {
+    var previousNode = this.findPreviousNode();
+    if (previousNode != null) {
+      previousNode.focusNode();
+    } else {
+      // We need to mark parent node focused if parent is not root.
+      this.parent.focusNode();
+    }
+  }
+
+  @action.bound
+  focusNextNode() {
+    if (this.childrenRoot != null) {
+      this.childrenRoot.focusNode();
+    } else if (this.next != null) {
+      this.next.focusNode();
+    } else {
+      // keep finding parent till they have next.
+      var parent = this.parent;
+      while (parent.isRoot == false && parent.next == null) {
+        parent = parent.next;
+      }
+      if (parent && parent.next) {
+        parent.next.focusNode();
+      }
     }
   }
 
@@ -129,6 +170,16 @@ class RootNode extends ItemNode {
     if (childRoot != null) {
       super.setChildRoot(childRoot);
     }
+  }
+
+  @action.bound
+  focusNode() {
+    // root can't be focused.
+  }
+
+  @action.bound
+  focusNextNode() {
+    // do nothing as their is no next node.
   }
 }
 

@@ -22,9 +22,9 @@ const ItemBullet = styled.div`
 `;
 
 const ChildrensBox = styled.div`
-  margin-left: 5px;
-  padding-left: 15px;
-  margin-top: 5px;
+  margin-left: 0.33rem;
+  padding-left: 1rem;
+  margin-top: 0.25rem;
   border-left: 1px solid rgb(236, 238, 240);
 `;
 
@@ -53,7 +53,7 @@ class SingleItemView extends Component {
           e.preventDefault();
           this.props.itemNode.moveToRight();
         case "Backspace":
-          if (this.props.itemNode.title === "<br>") {
+          if (this.props.itemNode.title === "<br>" || this.props.itemNode.title.length === 0) {
             e.preventDefault();
             this.props.itemNode.deleteNode();
           }
@@ -62,6 +62,13 @@ class SingleItemView extends Component {
           e.preventDefault();
           this.props.itemNode.toggleStrikeOut();
           return null;
+        case "ArrowUp":
+          e.preventDefault();
+          this.props.itemNode.focusPreviousNode();
+          return null;
+        case "ArrowDown":
+          e.preventDefault();
+          return this.props.itemNode.focusNextNode();
         default:
           return null;
       }
@@ -84,10 +91,11 @@ class SingleItemView extends Component {
   }
 
   render() {
+    // render block read focused property only to re-render in case of focus change.
     if (this.props.itemNode) {
       return (
         <React.Fragment>
-          <div className="worklog-item">
+          <div data-focused={this.props.itemNode.focused} className="worklog-item">
             <div>
               <ItemBullet>
                 <svg viewBox="0 0 18 18" fill="currentColor">
@@ -95,6 +103,7 @@ class SingleItemView extends Component {
                 </svg>
               </ItemBullet>
               <ContentEditable
+                id={"id_" + this.props.itemNode.id}
                 innerRef={this.itemEditBlock}
                 html={this.props.itemNode.title}
                 disabled={false}
