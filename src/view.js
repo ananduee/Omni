@@ -47,25 +47,29 @@ class SingleItemView extends Component {
       switch (e.key) {
         case "Enter":
           e.preventDefault();
-          this.props.itemNode.addNextSibling();
-          return null;
+          return this.props.itemNode.addNextSibling();
         case "Tab":
           e.preventDefault();
-          this.props.itemNode.moveToRight();
+          if (e.shiftKey) {
+            return this.props.itemNode.moveToLeft();
+          } else {
+            return this.props.itemNode.moveToRight();
+          }
         case "Backspace":
-          if (this.props.itemNode.title === "<br>" || this.props.itemNode.title.length === 0) {
+          if (
+            this.props.itemNode.title === "<br>" ||
+            this.props.itemNode.title.length === 0
+          ) {
             e.preventDefault();
             this.props.itemNode.deleteNode();
           }
           return null;
         case "X":
           e.preventDefault();
-          this.props.itemNode.toggleStrikeOut();
-          return null;
+          return this.props.itemNode.toggleStrikeOut();
         case "ArrowUp":
           e.preventDefault();
-          this.props.itemNode.focusPreviousNode();
-          return null;
+          return this.props.itemNode.focusPreviousNode();
         case "ArrowDown":
           e.preventDefault();
           return this.props.itemNode.focusNextNode();
@@ -95,7 +99,10 @@ class SingleItemView extends Component {
     if (this.props.itemNode) {
       return (
         <React.Fragment>
-          <div data-focused={this.props.itemNode.focused} className="worklog-item">
+          <div
+            data-focused={this.props.itemNode.focused}
+            className="worklog-item"
+          >
             <div>
               <ItemBullet>
                 <svg viewBox="0 0 18 18" fill="currentColor">

@@ -88,6 +88,11 @@ class ItemNode {
   @action.bound
   addNextSibling() {
     var newNode = new ItemNode("");
+    this.addNextSiblingNode(newNode)
+  }
+
+  @action.bound
+  addNextSiblingNode(newNode) {
     newNode.focused = true;
     newNode.parent = this.parent;
     newNode.next = this.next;
@@ -104,10 +109,32 @@ class ItemNode {
   }
 
   @action.bound
+  moveToLeft() {
+    var parent = this.parent;
+    if (!parent.isRoot) {
+      // Remove this node from current parent.
+      var previousNode = this.findPreviousNode();
+      if (previousNode) {
+
+      }
+      parent.addNextSiblingNode(this);
+    }
+  }
+
+  @action.bound
   focusPreviousNode() {
     var previousNode = this.findPreviousNode();
     if (previousNode != null) {
-      previousNode.focusNode();
+      if (previousNode.childrenRoot != null) {
+        // find last child of the previous node.
+        var markedNode = previousNode.findLastChildNode();
+        while (markedNode.childrenRoot != null) {
+          markedNode = markedNode.findLastChildNode();
+        }
+        markedNode.focusNode();
+      } else {
+        previousNode.focusNode();
+      }
     } else {
       // We need to mark parent node focused if parent is not root.
       this.parent.focusNode();
@@ -123,8 +150,8 @@ class ItemNode {
     } else {
       // keep finding parent till they have next.
       var parent = this.parent;
-      while (parent.isRoot == false && parent.next == null) {
-        parent = parent.next;
+      while (!parent.isRoot && parent.next == null) {
+        parent = parent.parent;
       }
       if (parent && parent.next) {
         parent.next.focusNode();
