@@ -88,7 +88,7 @@ class ItemNode {
   @action.bound
   addNextSibling() {
     var newNode = new ItemNode("");
-    this.addNextSiblingNode(newNode)
+    this.addNextSiblingNode(newNode);
   }
 
   @action.bound
@@ -112,10 +112,28 @@ class ItemNode {
   moveToLeft() {
     var parent = this.parent;
     if (!parent.isRoot) {
-      // Remove this node from current parent.
       var previousNode = this.findPreviousNode();
-      if (previousNode) {
-
+      // if this node already has child nodes then move this node as it is.
+      if (this.childrenRoot) {
+        if (previousNode) {
+          previousNode.next = this.next;
+        } else {
+          parent.childrenRoot = null;
+        }
+      } else {
+        // else next node should be marked as childRoot.
+        var nodeToMarkAsChild = this.next;
+        var nodeToChangeParent = nodeToMarkAsChild;
+        while (nodeToChangeParent != null) {
+          nodeToChangeParent.parent = this;
+          nodeToChangeParent = nodeToChangeParent.next;
+        }
+        this.childrenRoot = nodeToMarkAsChild;
+        if (previousNode) {
+          previousNode.next = null;
+        } else {
+          parent.childrenRoot = null;
+        }
       }
       parent.addNextSiblingNode(this);
     }
