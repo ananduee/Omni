@@ -177,6 +177,17 @@ class ItemNode {
     }
   }
 
+  @computed
+  get allChildNodes() {
+    var output = [];
+    var node = this.childrenRoot;
+    while (node != null) {
+      output.push(node);
+      node = node.next;
+    }
+    return output;
+  }
+
   findLastChildNode() {
     var lastNode = this.childrenRoot;
     while (lastNode.next != null) {

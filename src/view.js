@@ -23,7 +23,7 @@ const ItemBullet = styled.div`
 
 const ChildrensBox = styled.div`
   margin-left: 0.33rem;
-  padding-left: 1rem;
+  padding-left: 1.5rem;
   margin-top: 0.25rem;
   border-left: 1px solid rgb(236, 238, 240);
 `;
@@ -97,6 +97,7 @@ class SingleItemView extends Component {
   render() {
     // render block read focused property only to re-render in case of focus change.
     if (this.props.itemNode) {
+      var childNodes = this.props.itemNode.allChildNodes;
       return (
         <React.Fragment>
           <div
@@ -121,14 +122,11 @@ class SingleItemView extends Component {
               />
             </div>
             <ChildrensBox>
-              {this.props.itemNode.childrenRoot ? (
-                <SingleItemView itemNode={this.props.itemNode.childrenRoot} />
-              ) : null}
+              {childNodes.map(node => (
+                <SingleItemView key={node.id} itemNode={node} />
+              ))}
             </ChildrensBox>
           </div>
-          {this.props.itemNode.next ? (
-            <SingleItemView itemNode={this.props.itemNode.next} />
-          ) : null}
         </React.Fragment>
       );
     } else {
@@ -140,10 +138,13 @@ class SingleItemView extends Component {
 @observer
 class View extends Component {
   render() {
+    var childNodes = this.props.store.root.allChildNodes;
     return (
       <div>
         <h4>This is your worklog :)</h4>
-        <SingleItemView itemNode={this.props.store.root.childrenRoot} />
+        {childNodes.map(node => (
+          <SingleItemView key={node.id} itemNode={node} />
+        ))}
       </div>
     );
   }
