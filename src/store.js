@@ -27,7 +27,8 @@ class ItemNode {
     // In case we can find this node we should directly focus it instead of 2 renders.
     var node = document.getElementById("id_" + this.id);
     if (node) {
-      node.focus();
+      window.cursorManager.setEndOfContenteditable(node);
+      //node.focus();
     } else {
       this.focused = true;
     }
